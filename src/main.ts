@@ -21,6 +21,12 @@ button.style.fontSize = "30px";
 app.append(button);
 
 button.addEventListener("click", function () {
-    counter++; // Increment the counter
-    counterDiv.textContent = `${counter} spooks`; // Update the display
+  counter++; // Increment the counter
+  counterDiv.textContent = `${counter} spooks`; // Update the display
 });
+
+const incrementCounter = () => {
+    counter++;
+    counterDiv.textContent = `${counter} spooks`;
+}
+setInterval(incrementCounter, 1000);

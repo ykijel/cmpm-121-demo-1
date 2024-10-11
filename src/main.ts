@@ -25,8 +25,24 @@ button.addEventListener("click", function () {
   counterDiv.textContent = `${counter} spooks`; // Update the display
 });
 
-const incrementCounter = () => {
-    counter++;
-    counterDiv.textContent = `${counter} spooks`;
-}
-setInterval(incrementCounter, 1000);
+const updateCounterDisplay = () => {
+  counterDiv.textContent = `${counter.toFixed(2)} cookies`; // Update the display with two decimal places
+};
+
+let lastTimestamp: number = 0;
+
+// Animation loop using requestAnimationFrame
+const animate = (timestamp: number) => {
+    if (lastTimestamp !== 0) {
+        const deltaTime = (timestamp - lastTimestamp) / 1000; // Time difference in seconds
+        const increment = deltaTime; // Counter should increase by 1 unit per second
+        counter += increment; // Increment the counter by the calculated value
+        updateCounterDisplay(); // Update the display
+    }
+
+    lastTimestamp = timestamp; // Save the current timestamp for the next frame
+    requestAnimationFrame(animate); // Request the next frame
+};
+
+// Start the animation loop
+requestAnimationFrame(animate);

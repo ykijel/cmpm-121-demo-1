@@ -39,6 +39,13 @@ let purchasedA = 0;
 let purchasedB = 0;
 let purchasedC = 0;
 
+// Initial costs for the upgrades
+const costs = {
+  A: 10,
+  B: 100,
+  C: 1000,
+};
+
 // Create a button element for clicking to increase counter
 const clickButton: HTMLButtonElement = document.createElement("button");
 clickButton.textContent = "👻";
@@ -64,30 +71,37 @@ app.append(clickButton);
 
 // Define upgrade items
 const upgrades = [
-  { name: "A", cost: 10, growthIncrease: 0.1 },
-  { name: "B", cost: 100, growthIncrease: 2.0 },
-  { name: "C", cost: 1000, growthIncrease: 50.0 },
+  { name: "A", growthIncrease: 0.1 },
+  { name: "B", growthIncrease: 2.0 },
+  { name: "C", growthIncrease: 50.0 },
 ];
 
 // Create buttons for each upgrade
 const upgradeButtons: HTMLButtonElement[] = upgrades.map((upgrade) => {
   const button = document.createElement("button");
-  button.textContent = `Purchase Upgrade ${upgrade.name} (${upgrade.cost} spooks)`;
+  button.textContent = `Purchase Upgrade ${upgrade.name} (${costs[upgrade.name as keyof typeof costs].toFixed(2)} spooks)`;
   button.style.padding = "15px 30px";
   button.style.fontSize = "16px";
   button.style.color = "white";
   button.style.backgroundColor = "gray";
   button.style.margin = "10px";
   button.disabled = true;
-  
+
   button.addEventListener("click", () => {
-    if (counter >= upgrade.cost) {
-      counter -= upgrade.cost;
+    const currentCost = costs[upgrade.name as keyof typeof costs];
+
+    if (counter >= currentCost) {
+      counter -= currentCost;
       growthRate += upgrade.growthIncrease;
+
+      // Update the cost for the next purchase by increasing it by a factor of 1.15
+      costs[upgrade.name as keyof typeof costs] *= 1.15;
+
       updateCounterDisplay();
       updateGrowthRateDisplay();
       updateItemsPurchased(upgrade.name);
       updateUpgradeButtonsState();
+      updateUpgradeButtonLabels(); // Update the displayed cost on each button
     }
   });
 
@@ -113,11 +127,22 @@ const updateItemsPurchased = (itemName: string) => {
   itemsPurchasedDiv.textContent = `Items Purchased: A: ${purchasedA}, B: ${purchasedB}, C: ${purchasedC}`;
 };
 
+// Function to update the upgrade button labels with the new costs
+const updateUpgradeButtonLabels = () => {
+  upgradeButtons.forEach((button, index) => {
+    const upgrade = upgrades[index];
+    const currentCost = costs[upgrade.name as keyof typeof costs];
+    button.textContent = `Purchase Upgrade ${upgrade.name} (${currentCost.toFixed(2)} spooks)`;
+  });
+};
+
 // Function to enable/disable upgrade buttons based on the counter
 const updateUpgradeButtonsState = () => {
   upgrades.forEach((upgrade, index) => {
     const button = upgradeButtons[index];
-    if (counter >= upgrade.cost) {
+    const currentCost = costs[upgrade.name as keyof typeof costs];
+
+    if (counter >= currentCost) {
       button.disabled = false;
       button.style.backgroundColor = "#28a745";
       button.style.cursor = "pointer";

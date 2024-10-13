@@ -47,17 +47,22 @@ itemsPurchasedDiv.textContent = "Upgrades Purchased: Ghouls: 0, Haunted Houses: 
 itemsPurchasedDiv.classList.add("items-purchased-display");
 mainArea.append(itemsPurchasedDiv);
 
-// Initialize purchase counts for each upgrade
-let purchasedGhouls = 0;
-let purchasedHouses = 0;
-let purchasedGraveyards = 0;
+// Initialize purchase counts for each item
+const purchasedCounts: number[] = new Array(3).fill(0);
 
-// Initial costs for the upgrades
-const costs = {
-  ghoul: 10,
-  house: 100,
-  graveyard: 1000,
-};
+// Define the available items using the new interface
+interface Item {
+  name: string;
+  cost: number;
+  rate: number;
+}
+
+// Available items with costs and growth rates
+const availableItems: Item[] = [
+  { name: "Summon a Ghoul", cost: 10, rate: 0.1 },
+  { name: "Haunted House", cost: 100, rate: 2.0 },
+  { name: "Cursed Graveyard", cost: 1000, rate: 50.0 },
+];
 
 // Create a button element for clicking to increase counter (Main Ghost button)
 const clickButton: HTMLButtonElement = document.createElement("button");
@@ -72,33 +77,27 @@ clickButton.addEventListener("click", function () {
 
 mainArea.append(clickButton);
 
-// Define upgrade items with new spooky names
-const upgrades = [
-  { name: "Summon a Ghoul", growthIncrease: 0.1, key: "ghoul" },
-  { name: "Haunted House", growthIncrease: 2.0, key: "house" },
-  { name: "Cursed Graveyard", growthIncrease: 50.0, key: "graveyard" },
-];
-
-// Create buttons for each upgrade
-const upgradeButtons: HTMLButtonElement[] = upgrades.map((upgrade) => {
+// Function to create an upgrade button
+const createUpgradeButton = (item: Item, index: number) => {
   const button = document.createElement("button");
-  button.textContent = `Buy ${upgrade.name} (${costs[upgrade.key as keyof typeof costs].toFixed(2)} spooks)`;
+  button.textContent = `Buy ${item.name} (${item.cost.toFixed(2)} spooks)`;
   button.classList.add("upgrade-button");
   button.disabled = true;
 
   button.addEventListener("click", () => {
-    const currentCost = costs[upgrade.key as keyof typeof costs];
+    const currentCost = availableItems[index].cost;
 
     if (counter >= currentCost) {
       counter -= currentCost;
-      growthRate += upgrade.growthIncrease;
+      growthRate += item.rate;
 
       // Update the cost for the next purchase by increasing it by a factor of 1.15
-      costs[upgrade.key as keyof typeof costs] *= 1.15;
+      availableItems[index].cost *= 1.15;
+      purchasedCounts[index]++;
 
       updateCounterDisplay();
       updateGrowthRateDisplay();
-      updateItemsPurchased(upgrade.key);
+      updateItemsPurchased();
       updateUpgradeButtonsState();
       updateUpgradeButtonLabels(); // Update the displayed cost on each button
     }
@@ -106,7 +105,12 @@ const upgradeButtons: HTMLButtonElement[] = upgrades.map((upgrade) => {
 
   upgradesArea.append(button);
   return button;
-});
+};
+
+// Create and store the buttons for each upgrade item dynamically
+const upgradeButtons: HTMLButtonElement[] = availableItems.map((item, index) =>
+  createUpgradeButton(item, index)
+);
 
 // Function to update the counter display
 const updateCounterDisplay = () => {
@@ -119,31 +123,27 @@ const updateGrowthRateDisplay = () => {
 };
 
 // Function to update the number of purchased items
-const updateItemsPurchased = (upgradeKey: string) => {
-  if (upgradeKey === "ghoul") purchasedGhouls++;
-  if (upgradeKey === "house") purchasedHouses++;
-  if (upgradeKey === "graveyard") purchasedGraveyards++;
-  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${purchasedGhouls}, Haunted Houses: ${purchasedHouses}, Cursed Graveyards: ${purchasedGraveyards}`;
+const updateItemsPurchased = () => {
+  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${purchasedCounts[0]}, Haunted Houses: ${purchasedCounts[1]}, Cursed Graveyards: ${purchasedCounts[2]}`;
 };
 
 // Function to update the upgrade button labels with the new costs
 const updateUpgradeButtonLabels = () => {
   upgradeButtons.forEach((button, index) => {
-    const upgrade = upgrades[index];
-    const currentCost = costs[upgrade.key as keyof typeof costs];
-    button.textContent = `Buy ${upgrade.name} (${currentCost.toFixed(2)} spooks)`;
+    const item = availableItems[index];
+    button.textContent = `Buy ${item.name} (${item.cost.toFixed(2)} spooks)`;
   });
 };
 
 // Function to enable/disable upgrade buttons based on the counter
 const updateUpgradeButtonsState = () => {
-  upgrades.forEach((upgrade, index) => {
+  availableItems.forEach((item, index) => {
     const button = upgradeButtons[index];
-    const currentCost = costs[upgrade.key as keyof typeof costs];
+    const currentCost = item.cost;
 
     if (counter >= currentCost) {
       button.disabled = false;
-      button.style.backgroundColor = "#28a745";  // Green when purchasable
+      button.style.backgroundColor = "#28a745"; // Green when purchasable
       button.style.cursor = "pointer";
     } else {
       button.disabled = true;

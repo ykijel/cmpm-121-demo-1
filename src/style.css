@@ -27,7 +27,9 @@ body {
   border-radius: 10px;
 }
 
-.counter-display, .growth-rate-display, .items-purchased-display {
+.counter-display,
+.growth-rate-display,
+.items-purchased-display {
   margin: 20px 0;
 }
 

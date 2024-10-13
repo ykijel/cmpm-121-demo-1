@@ -43,25 +43,28 @@ mainArea.append(growthRateDiv);
 
 // Create a div to display the number of items purchased
 const itemsPurchasedDiv: HTMLDivElement = document.createElement("div");
-itemsPurchasedDiv.textContent = "Upgrades Purchased: Ghouls: 0, Haunted Houses: 0, Cursed Graveyards: 0";
+itemsPurchasedDiv.textContent = "Upgrades Purchased: Ghouls: 0, Haunted Houses: 0, Cursed Graveyards: 0, Witch Covens: 0, Phantom Orchestras: 0";
 itemsPurchasedDiv.classList.add("items-purchased-display");
 mainArea.append(itemsPurchasedDiv);
 
 // Initialize purchase counts for each item
-const purchasedCounts: number[] = new Array(3).fill(0);
+const purchasedCounts: number[] = new Array(5).fill(0);
 
 // Define the available items using the new interface
 interface Item {
   name: string;
   cost: number;
   rate: number;
+  description: string;
 }
 
-// Available items with costs and growth rates
+// Available items with costs, growth rates, and descriptions
 const availableItems: Item[] = [
-  { name: "Summon a Ghoul", cost: 10, rate: 0.1 },
-  { name: "Haunted House", cost: 100, rate: 2.0 },
-  { name: "Cursed Graveyard", cost: 1000, rate: 50.0 },
+  { name: "Summon a Ghoul", cost: 10, rate: 0.1, description: "Ghouls roam the graveyard and gather spooks for you." },
+  { name: "Haunted House", cost: 100, rate: 2.0, description: "A creepy house that lures in the brave, collecting spooks." },
+  { name: "Cursed Graveyard", cost: 1000, rate: 50.0, description: "An ancient graveyard brimming with restless spirits." },
+  { name: "Witch Coven", cost: 5000, rate: 200, description: "A coven of witches brewing spooky potions every second." },
+  { name: "Phantom Orchestra", cost: 25000, rate: 1000, description: "An eerie orchestra that haunts the land with ghostly music." },
 ];
 
 // Create a button element for clicking to increase counter (Main Ghost button)
@@ -79,6 +82,9 @@ mainArea.append(clickButton);
 
 // Function to create an upgrade button
 const createUpgradeButton = (item: Item, index: number) => {
+  const buttonWrapper = document.createElement("div");
+  buttonWrapper.classList.add("upgrade-wrapper");
+
   const button = document.createElement("button");
   button.textContent = `Buy ${item.name} (${item.cost.toFixed(2)} spooks)`;
   button.classList.add("upgrade-button");
@@ -103,7 +109,12 @@ const createUpgradeButton = (item: Item, index: number) => {
     }
   });
 
-  upgradesArea.append(button);
+  const description = document.createElement("p");
+  description.textContent = item.description;
+  description.classList.add("item-description");
+
+  buttonWrapper.append(button, description);
+  upgradesArea.append(buttonWrapper);
   return button;
 };
 
@@ -124,7 +135,7 @@ const updateGrowthRateDisplay = () => {
 
 // Function to update the number of purchased items
 const updateItemsPurchased = () => {
-  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${purchasedCounts[0]}, Haunted Houses: ${purchasedCounts[1]}, Cursed Graveyards: ${purchasedCounts[2]}`;
+  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${purchasedCounts[0]}, Haunted Houses: ${purchasedCounts[1]}, Cursed Graveyards: ${purchasedCounts[2]}, Witch Covens: ${purchasedCounts[3]}, Phantom Orchestras: ${purchasedCounts[4]}`;
 };
 
 // Function to update the upgrade button labels with the new costs

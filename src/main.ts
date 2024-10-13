@@ -2,12 +2,28 @@ import "./style.css";
 
 const app: HTMLDivElement = document.querySelector("#app")!;
 
-const gameName = "Yahli's Incremental Game";
+const gameName = "Spooky Clicker";
 document.title = gameName;
 
+// Create a wrapper for the entire game content
+const gameContainer = document.createElement("div");
+gameContainer.classList.add("game-container");
+app.append(gameContainer);
+
+// Create the main content area (for the button and counter)
+const mainArea = document.createElement("div");
+mainArea.classList.add("main-area");
+gameContainer.append(mainArea);
+
+// Create the upgrades section
+const upgradesArea = document.createElement("div");
+upgradesArea.classList.add("upgrades-area");
+gameContainer.append(upgradesArea);
+
+// Game title
 const header = document.createElement("h1");
 header.innerHTML = gameName;
-app.append(header);
+mainArea.append(header);
 
 let counter: number = 0;
 let fractionalCounter: number = 0;
@@ -15,51 +31,38 @@ let growthRate: number = 0;
 
 // Create a div to display the counter
 const counterDiv: HTMLDivElement = document.createElement("div");
-counterDiv.textContent = `${counter.toFixed(0)} spooks`;
-counterDiv.style.fontSize = "24px";
-counterDiv.style.margin = "20px 0";
-app.append(counterDiv);
+counterDiv.textContent = `${counter.toFixed(0)} spooks collected`;
+counterDiv.classList.add("counter-display");
+mainArea.append(counterDiv);
 
 // Create a div to display the growth rate
 const growthRateDiv: HTMLDivElement = document.createElement("div");
 growthRateDiv.textContent = `Current Growth Rate: ${growthRate.toFixed(1)} spooks/sec`;
-growthRateDiv.style.fontSize = "20px";
-growthRateDiv.style.margin = "20px 0";
-app.append(growthRateDiv);
+growthRateDiv.classList.add("growth-rate-display");
+mainArea.append(growthRateDiv);
 
 // Create a div to display the number of items purchased
 const itemsPurchasedDiv: HTMLDivElement = document.createElement("div");
-itemsPurchasedDiv.textContent = "Items Purchased: A: 0, B: 0, C: 0";
-itemsPurchasedDiv.style.fontSize = "20px";
-itemsPurchasedDiv.style.margin = "20px 0";
-app.append(itemsPurchasedDiv);
+itemsPurchasedDiv.textContent = "Upgrades Purchased: Ghouls: 0, Haunted Houses: 0, Cursed Graveyards: 0";
+itemsPurchasedDiv.classList.add("items-purchased-display");
+mainArea.append(itemsPurchasedDiv);
 
 // Initialize purchase counts for each upgrade
-let purchasedA = 0;
-let purchasedB = 0;
-let purchasedC = 0;
+let purchasedGhouls = 0;
+let purchasedHouses = 0;
+let purchasedGraveyards = 0;
 
 // Initial costs for the upgrades
 const costs = {
-  A: 10,
-  B: 100,
-  C: 1000,
+  ghoul: 10,
+  house: 100,
+  graveyard: 1000,
 };
 
-// Create a button element for clicking to increase counter
+// Create a button element for clicking to increase counter (Main Ghost button)
 const clickButton: HTMLButtonElement = document.createElement("button");
 clickButton.textContent = "👻";
-clickButton.style.padding = "15px 30px";
-clickButton.style.fontSize = "25";
-clickButton.style.backgroundColor = "#007BFF";
-
-clickButton.onmouseover = function () {
-  clickButton.style.backgroundColor = "#0056b3";
-};
-
-clickButton.onmouseout = function () {
-  clickButton.style.backgroundColor = "#007BFF";
-};
+clickButton.classList.add("main-click-button");
 
 clickButton.addEventListener("click", function () {
   counter++;
@@ -67,51 +70,47 @@ clickButton.addEventListener("click", function () {
   updateUpgradeButtonsState();
 });
 
-app.append(clickButton);
+mainArea.append(clickButton);
 
-// Define upgrade items
+// Define upgrade items with new spooky names
 const upgrades = [
-  { name: "A", growthIncrease: 0.1 },
-  { name: "B", growthIncrease: 2.0 },
-  { name: "C", growthIncrease: 50.0 },
+  { name: "Summon a Ghoul", growthIncrease: 0.1, key: "ghoul" },
+  { name: "Haunted House", growthIncrease: 2.0, key: "house" },
+  { name: "Cursed Graveyard", growthIncrease: 50.0, key: "graveyard" },
 ];
 
 // Create buttons for each upgrade
 const upgradeButtons: HTMLButtonElement[] = upgrades.map((upgrade) => {
   const button = document.createElement("button");
-  button.textContent = `Purchase Upgrade ${upgrade.name} (${costs[upgrade.name as keyof typeof costs].toFixed(2)} spooks)`;
-  button.style.padding = "15px 30px";
-  button.style.fontSize = "16px";
-  button.style.color = "white";
-  button.style.backgroundColor = "gray";
-  button.style.margin = "10px";
+  button.textContent = `Buy ${upgrade.name} (${costs[upgrade.key as keyof typeof costs].toFixed(2)} spooks)`;
+  button.classList.add("upgrade-button");
   button.disabled = true;
 
   button.addEventListener("click", () => {
-    const currentCost = costs[upgrade.name as keyof typeof costs];
+    const currentCost = costs[upgrade.key as keyof typeof costs];
 
     if (counter >= currentCost) {
       counter -= currentCost;
       growthRate += upgrade.growthIncrease;
 
       // Update the cost for the next purchase by increasing it by a factor of 1.15
-      costs[upgrade.name as keyof typeof costs] *= 1.15;
+      costs[upgrade.key as keyof typeof costs] *= 1.15;
 
       updateCounterDisplay();
       updateGrowthRateDisplay();
-      updateItemsPurchased(upgrade.name);
+      updateItemsPurchased(upgrade.key);
       updateUpgradeButtonsState();
       updateUpgradeButtonLabels(); // Update the displayed cost on each button
     }
   });
 
-  app.append(button);
+  upgradesArea.append(button);
   return button;
 });
 
 // Function to update the counter display
 const updateCounterDisplay = () => {
-  counterDiv.textContent = `${counter.toFixed(0)} spooks`;
+  counterDiv.textContent = `${counter.toFixed(0)} spooks collected`;
 };
 
 // Function to update the growth rate display
@@ -120,19 +119,19 @@ const updateGrowthRateDisplay = () => {
 };
 
 // Function to update the number of purchased items
-const updateItemsPurchased = (itemName: string) => {
-  if (itemName === "A") purchasedA++;
-  if (itemName === "B") purchasedB++;
-  if (itemName === "C") purchasedC++;
-  itemsPurchasedDiv.textContent = `Items Purchased: A: ${purchasedA}, B: ${purchasedB}, C: ${purchasedC}`;
+const updateItemsPurchased = (upgradeKey: string) => {
+  if (upgradeKey === "ghoul") purchasedGhouls++;
+  if (upgradeKey === "house") purchasedHouses++;
+  if (upgradeKey === "graveyard") purchasedGraveyards++;
+  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${purchasedGhouls}, Haunted Houses: ${purchasedHouses}, Cursed Graveyards: ${purchasedGraveyards}`;
 };
 
 // Function to update the upgrade button labels with the new costs
 const updateUpgradeButtonLabels = () => {
   upgradeButtons.forEach((button, index) => {
     const upgrade = upgrades[index];
-    const currentCost = costs[upgrade.name as keyof typeof costs];
-    button.textContent = `Purchase Upgrade ${upgrade.name} (${currentCost.toFixed(2)} spooks)`;
+    const currentCost = costs[upgrade.key as keyof typeof costs];
+    button.textContent = `Buy ${upgrade.name} (${currentCost.toFixed(2)} spooks)`;
   });
 };
 
@@ -140,11 +139,11 @@ const updateUpgradeButtonLabels = () => {
 const updateUpgradeButtonsState = () => {
   upgrades.forEach((upgrade, index) => {
     const button = upgradeButtons[index];
-    const currentCost = costs[upgrade.name as keyof typeof costs];
+    const currentCost = costs[upgrade.key as keyof typeof costs];
 
     if (counter >= currentCost) {
       button.disabled = false;
-      button.style.backgroundColor = "#28a745";
+      button.style.backgroundColor = "#28a745";  // Green when purchasable
       button.style.cursor = "pointer";
     } else {
       button.disabled = true;

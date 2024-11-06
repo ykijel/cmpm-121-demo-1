@@ -5,6 +5,9 @@ const app: HTMLDivElement = document.querySelector("#app")!;
 const gameName = "Spooky Clicker";
 document.title = gameName;
 
+// Define a named constant for cost increase
+const COST_INCREASE_FACTOR = 1.15;
+
 // Create a wrapper for the entire game content
 const gameContainer = document.createElement("div");
 gameContainer.classList.add("game-container");
@@ -43,28 +46,46 @@ mainArea.append(growthRateDiv);
 
 // Create a div to display the number of items purchased
 const itemsPurchasedDiv: HTMLDivElement = document.createElement("div");
-itemsPurchasedDiv.textContent = "Upgrades Purchased: Ghouls: 0, Haunted Houses: 0, Cursed Graveyards: 0, Witch Covens: 0, Phantom Orchestras: 0";
+itemsPurchasedDiv.textContent =
+  "Upgrades Purchased: Ghouls: 0, Haunted Houses: 0, Cursed Graveyards: 0, Witch Covens: 0, Phantom Orchestras: 0";
 itemsPurchasedDiv.classList.add("items-purchased-display");
 mainArea.append(itemsPurchasedDiv);
 
-// Initialize purchase counts for each item
-const purchasedCounts: number[] = new Array(5).fill(0);
-
-// Define the available items using the new interface
-interface Item {
+// UpgradeItem class to encapsulate each item's properties and behavior
+class UpgradeItem {
   name: string;
   cost: number;
   rate: number;
   description: string;
+  purchasedCount: number = 0;
+
+  constructor(name: string, cost: number, rate: number, description: string) {
+    this.name = name;
+    this.cost = cost;
+    this.rate = rate;
+    this.description = description;
+  }
+
+  // Method to handle purchasing the item
+  purchase(): boolean {
+    if (counter >= this.cost) {
+      counter -= this.cost;
+      growthRate += this.rate;
+      this.cost *= COST_INCREASE_FACTOR; // Use constant for cost increase factor
+      this.purchasedCount++;
+      return true;
+    }
+    return false;
+  }
 }
 
 // Available items with costs, growth rates, and descriptions
-const availableItems: Item[] = [
-  { name: "Summon a Ghoul", cost: 10, rate: 0.1, description: "Ghouls roam the graveyard and gather spooks for you." },
-  { name: "Haunted House", cost: 100, rate: 2.0, description: "A creepy house that lures in the brave, collecting spooks." },
-  { name: "Cursed Graveyard", cost: 1000, rate: 50.0, description: "An ancient graveyard brimming with restless spirits." },
-  { name: "Witch Coven", cost: 5000, rate: 200, description: "A coven of witches brewing spooky potions every second." },
-  { name: "Phantom Orchestra", cost: 25000, rate: 1000, description: "An eerie orchestra that haunts the land with ghostly music." },
+const availableItems: UpgradeItem[] = [
+  new UpgradeItem("Summon a Ghoul", 10, 0.1, "Ghouls roam the graveyard and gather spooks for you."),
+  new UpgradeItem("Haunted House", 100, 2.0, "A creepy house that lures in the brave, collecting spooks."),
+  new UpgradeItem("Cursed Graveyard", 1000, 50.0, "An ancient graveyard brimming with restless spirits."),
+  new UpgradeItem("Witch Coven", 5000, 200, "A coven of witches brewing spooky potions every second."),
+  new UpgradeItem("Phantom Orchestra", 25000, 1000, "An eerie orchestra that haunts the land with ghostly music.")
 ];
 
 // Create a button element for clicking to increase counter (Main Ghost button)
@@ -80,47 +101,53 @@ clickButton.addEventListener("click", function () {
 
 mainArea.append(clickButton);
 
-// Function to create an upgrade button
-const createUpgradeButton = (item: Item, index: number) => {
-  const buttonWrapper = document.createElement("div");
-  buttonWrapper.classList.add("upgrade-wrapper");
-
+// Function to create an upgrade button element
+const createUpgradeButtonElement = (item: UpgradeItem, index: number): HTMLButtonElement => {
   const button = document.createElement("button");
   button.textContent = `Buy ${item.name} (${item.cost.toFixed(2)} spooks)`;
   button.classList.add("upgrade-button");
   button.disabled = true;
+  button.addEventListener("click", () => handleUpgradePurchase(index));
+  return button;
+};
 
-  button.addEventListener("click", () => {
-    const currentCost = availableItems[index].cost;
+// Function to handle the purchase of an upgrade item
+const handleUpgradePurchase = (index: number) => {
+  const item = availableItems[index];
+  if (item.purchase()) {
+    updateCounterDisplay();
+    updateGrowthRateDisplay();
+    updateItemsPurchased();
+    updateUpgradeButtonsState();
+    updateUpgradeButtonLabels(); // Update the displayed cost on each button
+  }
+};
 
-    if (counter >= currentCost) {
-      counter -= currentCost;
-      growthRate += item.rate;
+// Helper function to create the item description
+const createItemDescription = (description: string): HTMLParagraphElement => {
+  const descriptionElement = document.createElement("p");
+  descriptionElement.textContent = description;
+  descriptionElement.classList.add("item-description");
+  return descriptionElement;
+};
 
-      // Update the cost for the next purchase by increasing it by a factor of 1.15
-      availableItems[index].cost *= 1.15;
-      purchasedCounts[index]++;
+// Main function to create an upgrade button with a description and wrapper
+const createUpgradeButton = (item: UpgradeItem, index: number): HTMLButtonElement => {
+  const buttonWrapper = document.createElement("div");
+  buttonWrapper.classList.add("upgrade-wrapper");
 
-      updateCounterDisplay();
-      updateGrowthRateDisplay();
-      updateItemsPurchased();
-      updateUpgradeButtonsState();
-      updateUpgradeButtonLabels(); // Update the displayed cost on each button
-    }
-  });
-
-  const description = document.createElement("p");
-  description.textContent = item.description;
-  description.classList.add("item-description");
+  const button = createUpgradeButtonElement(item, index);
+  const description = createItemDescription(item.description);
 
   buttonWrapper.append(button, description);
   upgradesArea.append(buttonWrapper);
+
   return button;
 };
 
 // Create and store the buttons for each upgrade item dynamically
 const upgradeButtons: HTMLButtonElement[] = availableItems.map((item, index) =>
-  createUpgradeButton(item, index)
+  createUpgradeButton(item, index),
 );
 
 // Function to update the counter display
@@ -135,7 +162,7 @@ const updateGrowthRateDisplay = () => {
 
 // Function to update the number of purchased items
 const updateItemsPurchased = () => {
-  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${purchasedCounts[0]}, Haunted Houses: ${purchasedCounts[1]}, Cursed Graveyards: ${purchasedCounts[2]}, Witch Covens: ${purchasedCounts[3]}, Phantom Orchestras: ${purchasedCounts[4]}`;
+  itemsPurchasedDiv.textContent = `Upgrades Purchased: Ghouls: ${availableItems[0].purchasedCount}, Haunted Houses: ${availableItems[1].purchasedCount}, Cursed Graveyards: ${availableItems[2].purchasedCount}, Witch Covens: ${availableItems[3].purchasedCount}, Phantom Orchestras: ${availableItems[4].purchasedCount}`;
 };
 
 // Function to update the upgrade button labels with the new costs

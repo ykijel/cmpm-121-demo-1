@@ -1,64 +1,98 @@
 body {
   font-family: Arial, sans-serif;
-  background-color: #1c1c1c;
   color: white;
-  text-align: center;
   margin: 0;
   padding: 0;
+  background-color: #1c1c1c;
 }
 
 .game-container {
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  padding: 20px;
+  justify-content: center; /* Center main content horizontally */
+  align-items: center; /* Center main content vertically */
+  height: 100vh; /* Full viewport height */
+  background-image: url('./halloback.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
 }
 
 .main-area {
-  flex: 2;
   text-align: center;
-}
-
-.upgrades-area {
-  flex: 1;
-  text-align: left;
-  padding: 20px;
-  background-color: #333333;
+  background-color: rgba(0, 0, 0, 0.129); /* Transparent background for readability */
+  font-family: 'Creepster', cursive; /* Spooky font */
+  color: rgb(255, 255, 255);
+  padding: 40px;
   border-radius: 10px;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .counter-display,
 .growth-rate-display,
 .items-purchased-display {
   margin: 20px 0;
+  color: #ffeb3b; /* Bright yellow for readability */
+  text-shadow: 2px 2px 4px #000000;
 }
 
 .main-click-button {
   padding: 40px;
   font-size: 60px;
-  background-color: #ff6f61;
+  background-color: rgba(138, 43, 226, 0.9); /* Purple background */
   border-radius: 50%;
   border: none;
   cursor: pointer;
+  color: #ffffff;
+  box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
 }
 
 .main-click-button:hover {
-  background-color: #ff3b2f;
+  background-color: rgba(75, 0, 130, 0.9); /* Darker purple on hover */
+}
+
+/* Upgrades area positioned in the top-right */
+.upgrades-area {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  width: 200px; /* Compact width */
+  background-color: rgba(51, 51, 51, 0.8); /* Semi-transparent dark background */
+  padding: 15px;
+  border-radius: 10px;
+  text-align: left;
+  box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
 }
 
 .upgrade-button {
   display: block;
-  padding: 10px;
-  margin-bottom: 10px;
-  font-size: 18px;
+  padding: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
   color: white;
   background-color: gray;
   border: none;
-  cursor: not-allowed;
   width: 100%;
   text-align: left;
+  transition: background-color 0.3s, box-shadow 0.3s;
+}
+
+.upgrade-button:not(:disabled) {
+  background-color: #28a745;
+  cursor: pointer;
+  box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+}
+
+.upgrade-button:not(:disabled):hover {
+  background-color: #218838;
 }
 
 .upgrade-button:disabled {
   background-color: gray;
+}
+
+.item-description {
+  font-size: 12px;
+  color: #cccccc;
+  margin: 0;
 }

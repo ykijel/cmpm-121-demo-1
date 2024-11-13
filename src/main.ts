@@ -81,11 +81,36 @@ class UpgradeItem {
 
 // Available items with costs, growth rates, and descriptions
 const availableItems: UpgradeItem[] = [
-  new UpgradeItem("Summon a Ghoul", 10, 0.1, "Ghouls roam the graveyard and gather spooks for you."),
-  new UpgradeItem("Haunted House", 100, 2.0, "A creepy house that lures in the brave, collecting spooks."),
-  new UpgradeItem("Cursed Graveyard", 1000, 50.0, "An ancient graveyard brimming with restless spirits."),
-  new UpgradeItem("Witch Coven", 5000, 200, "A coven of witches brewing spooky potions every second."),
-  new UpgradeItem("Phantom Orchestra", 25000, 1000, "An eerie orchestra that haunts the land with ghostly music.")
+  new UpgradeItem(
+    "Summon a Ghoul",
+    10,
+    0.1,
+    "Ghouls roam the graveyard and gather spooks for you.",
+  ),
+  new UpgradeItem(
+    "Haunted House",
+    100,
+    2.0,
+    "A creepy house that lures in the brave, collecting spooks.",
+  ),
+  new UpgradeItem(
+    "Cursed Graveyard",
+    1000,
+    50.0,
+    "An ancient graveyard brimming with restless spirits.",
+  ),
+  new UpgradeItem(
+    "Witch Coven",
+    5000,
+    200,
+    "A coven of witches brewing spooky potions every second.",
+  ),
+  new UpgradeItem(
+    "Phantom Orchestra",
+    25000,
+    1000,
+    "An eerie orchestra that haunts the land with ghostly music.",
+  ),
 ];
 
 // Create a button element for clicking to increase counter (Main Ghost button)
@@ -102,7 +127,10 @@ clickButton.addEventListener("click", function () {
 mainArea.append(clickButton);
 
 // Function to create an upgrade button element
-const createUpgradeButtonElement = (item: UpgradeItem, index: number): HTMLButtonElement => {
+const createUpgradeButtonElement = (
+  item: UpgradeItem,
+  index: number,
+): HTMLButtonElement => {
   const button = document.createElement("button");
   button.textContent = `Buy ${item.name} (${item.cost.toFixed(2)} spooks)`;
   button.classList.add("upgrade-button");
@@ -132,7 +160,10 @@ const createItemDescription = (description: string): HTMLParagraphElement => {
 };
 
 // Main function to create an upgrade button with a description and wrapper
-const createUpgradeButton = (item: UpgradeItem, index: number): HTMLButtonElement => {
+const createUpgradeButton = (
+  item: UpgradeItem,
+  index: number,
+): HTMLButtonElement => {
   const buttonWrapper = document.createElement("div");
   buttonWrapper.classList.add("upgrade-wrapper");
 

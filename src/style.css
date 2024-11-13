@@ -11,7 +11,7 @@ body {
   justify-content: center; /* Center main content horizontally */
   align-items: center; /* Center main content vertically */
   height: 100vh; /* Full viewport height */
-  background-image: url('./halloback.jpg');
+  background-image: url("./halloback.jpg");
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -20,8 +20,13 @@ body {
 
 .main-area {
   text-align: center;
-  background-color: rgba(0, 0, 0, 0.129); /* Transparent background for readability */
-  font-family: 'Creepster', cursive; /* Spooky font */
+  background-color: rgba(
+    0,
+    0,
+    0,
+    0.129
+  ); /* Transparent background for readability */
+  font-family: "Creepster", cursive; /* Spooky font */
   color: rgb(255, 255, 255);
   padding: 40px;
   border-radius: 10px;
@@ -57,7 +62,12 @@ body {
   top: 20px;
   right: 20px;
   width: 200px; /* Compact width */
-  background-color: rgba(51, 51, 51, 0.8); /* Semi-transparent dark background */
+  background-color: rgba(
+    51,
+    51,
+    51,
+    0.8
+  ); /* Semi-transparent dark background */
   padding: 15px;
   border-radius: 10px;
   text-align: left;
@@ -74,7 +84,9 @@ body {
   border: none;
   width: 100%;
   text-align: left;
-  transition: background-color 0.3s, box-shadow 0.3s;
+  transition:
+    background-color 0.3s,
+    box-shadow 0.3s;
 }
 
 .upgrade-button:not(:disabled) {
